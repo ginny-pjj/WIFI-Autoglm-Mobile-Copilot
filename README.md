@@ -1,55 +1,70 @@
 ﻿# AutoGLM Mobile Copilot WiFi v1
 
-> A local WiFi debugging version of AutoGLM Mobile Copilot based on [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM). This version runs the backend on a Windows PC, connects to a real Android phone through wireless ADB on the same WiFi, and lets the mobile App send tasks to the local FastAPI service over LAN.
+> 基于 [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 的手机 AI Agent **WiFi 无线调试版**。  
+> Windows 电脑跑 FastAPI 后端，手机与电脑在同一 WiFi 下通过无线 ADB 连接，App 用电脑局域网 IP 访问后端。
 
-## 1. Project Positioning
+**📌 给面试官：** 本仓库对应官方 README 中的「远程调试 / WiFi ADB」能力。  
+**📖 系列总览：** [USB 主仓库 SERIES.md](https://github.com/ginny-pjj/USB-Autoglm-Mobile-Copilot/blob/main/SERIES.md)  
+**📖 本仓库：** [作业对照与面试官导读](docs/作业对照与面试官导读.md) · [phone_agent 目录对照](docs/phone_agent-目录对照.md) · [快速开始](docs/quick-start.md)
 
-This is the **local WiFi debugging first version** of AutoGLM Mobile Copilot.
+---
 
-This repository focuses on **same-WiFi local deployment**. It does not include cloud server deployment, Docker, or Tailscale-based remote ADB. It is intended to be a simpler course-project version than the cloud edition, while still demonstrating real-phone automation without a permanent USB cable.
+## 系列项目一览
 
-Value of WiFi v1:
+| 版本 | GitHub 仓库 | 部署方式 | 定位 |
+| --- | --- | --- | --- |
+| USB v1（主入口） | [USB-Autoglm-Mobile-Copilot](https://github.com/ginny-pjj/USB-Autoglm-Mobile-Copilot) | USB 线 + 电脑本地后端 | ✅ 作业主交付 |
+| **WiFi v1（本仓库）** | [WIFI-Autoglm-Mobile-Copilot](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot) | 同 WiFi 无线 ADB | ✅ 官方「远程调试」 |
+| Cloud | [CLOUD-Autoglm-Mobile-Copilot](https://github.com/ginny-pjj/CLOUD-Autoglm-Mobile-Copilot) | 云 Docker + Tailscale | ⭐ 工程进阶 |
 
-- Runs a complete real Android phone control loop through wireless ADB.
-- Verifies the App -> FastAPI -> Open-AutoGLM -> ADB -> phone pipeline in a local setting.
-- Serves as the intermediate version between a USB prototype and a cloud remote-control version.
+---
 
-## 2. Project Background
+## 1. 项目定位
 
-Open-AutoGLM officially supports remote debugging through `adb connect phone_ip:5555`. This project wraps that official capability with:
+这是 **AutoGLM Mobile Copilot 的 WiFi 无线调试版**。
 
-1. A local FastAPI service layer.
-2. A mobile control App.
-3. Structured Agent trace display.
-4. Simple local WiFi connection scripts.
+与 USB 版的核心区别：
 
-Unlike the USB version, this project does **not** rely on `adb reverse`. The mobile App directly accesses the PC through a LAN address.
+- **不用** `adb reverse`，App 填电脑的 **局域网 IP**（如 `http://192.168.1.10:8000`）
+- **不用** 一直插 USB 线，手机通过 `adb connect 手机IP:5555` 无线连接
+- 仍在本机 Windows 跑后端，**不需要云服务器、Docker、Tailscale**
 
-## 3. Core Features
+适合展示：官方文档里的 WiFi 远程 ADB 能力 + 你自己的 App / FastAPI 工程封装。
 
-| Feature | Description |
+## 2. 项目背景
+
+[Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 官方支持通过 `adb connect 手机IP:5555` 做无线调试。本项目在此基础上做了产品化封装：
+
+1. Windows 电脑运行 FastAPI 后端
+2. 手机与电脑在同一 WiFi，无线 ADB 连接
+3. Android App 作为任务入口，展示结构化 Trace
+4. 提供 `connect_phone_wifi.bat` 一键连接脚本
+
+## 3. 核心功能
+
+| 功能 | 说明 |
 | --- | --- |
-| Mobile App control panel | Enter tasks, configure LAN base URL, choose Mock/Real, view Trace |
-| FastAPI task service | Provides `/health`, `/devices`, `/tasks`, `/tasks/{id}/trace` |
-| Open-AutoGLM integration | Calls `Open-AutoGLM/main.py` through subprocess |
-| WiFi ADB control | Controls a real Android phone through `adb connect phone_ip:5555` |
-| Structured Trace | Displays Observe / Think / Action / Result |
-| Mock / Real modes | Mock for UI debugging, Real for actual agent execution |
+| 手机 App 控制端 | 输入任务、配置局域网地址、选择 Mock/Real、查看 Trace |
+| FastAPI 任务服务 | 提供 `/health`、`/devices`、`/tasks`、`/tasks/{id}/trace` |
+| Open-AutoGLM 集成 | 后端 subprocess 调用 `Open-AutoGLM/main.py` |
+| WiFi ADB 控制 | 通过 `adb connect 手机IP:5555` 控制真实 Android 手机 |
+| 结构化 Trace | 展示 Observe / Think / Action / Result |
+| Mock / Real 双模式 | Mock 用于 UI 联调；Real 调用真实 Agent |
 
-## 4. System Architecture
+## 4. 系统架构
 
 ```text
 Android App
-  task input / trace display
-        -> http://PC_LAN_IP:8000
+  输入任务 / 展示 Trace
+        ↓ http://电脑局域网IP:8000
 Windows PC FastAPI Server
-        -> subprocess
+        ↓ subprocess
 Open-AutoGLM PhoneAgent
-        -> WiFi ADB
-Real Android Phone
+        ↓ WiFi ADB (adb connect)
+真实 Android 手机
 ```
 
-Suggested screenshots / diagrams:
+建议补充截图：
 
 ```text
 assets/architecture-wifi.png
@@ -57,7 +72,7 @@ assets/app-home-wifi.png
 assets/wifi-demo-result.png
 ```
 
-## 5. Project Structure
+## 5. 项目结构
 
 ```text
 autoglm-mobile-copilot-wifi-v1/
@@ -65,170 +80,170 @@ autoglm-mobile-copilot-wifi-v1/
 ├── NOTICE.md
 ├── .gitignore
 ├── ADBKeyboard.apk
-├── Open-AutoGLM/              # Official Phone Agent code + local integration patches
-├── server/                    # FastAPI service layer
+├── Open-AutoGLM/              # 官方 Phone Agent + 本项目补丁
+├── server/
 │   ├── main.py
-│   ├── requirements.txt
 │   ├── start_server.bat
-│   ├── connect_phone_wifi.bat
-│   ├── connect_phone.bat
+│   ├── connect_phone_wifi.bat # WiFi 连接主脚本
+│   ├── connect_phone.bat      # 首次 USB 开 tcpip 5555 时用
 │   └── .env.example
-├── mobile-app/                # Mobile control App
+├── mobile-app/
 ├── docs/
+│   ├── 作业对照与面试官导读.md
 │   ├── architecture.md
-│   ├── demo-script.md
 │   ├── quick-start.md
-│   ├── faq.md
-│   └── vibe-coding-log.md
-├── assets/                    # Diagrams and screenshots
-├── demo/                      # Demo video files
-├── dist/                      # APK output placeholder
-└── releases/                  # Release attachment placeholder
+│   ├── demo-script.md
+│   └── faq.md
+├── assets/
+├── demo/
+└── dist/
 ```
 
-## 6. Execution Logic
+## 6. 实现逻辑
 
 ```text
 App POST /tasks
-  -> local FastAPI service receives the task through LAN
-  -> server/main.py creates a task record
-  -> checks BIGMODEL_API_KEY, Open-AutoGLM path, and wireless ADB device
-  -> optional prepare_device: wake, unlock, return to desktop
-  -> starts Open-AutoGLM/main.py through subprocess
-  -> PhoneAgent.run(task)
-      -> captures the current phone screen
-      -> calls the VLM to understand the page and decide actions
-      -> executes Launch / Tap / Type / Swipe through handler.py
-      -> captures the next screen for the following loop
-  -> server cleans raw logs into structured Trace
-  -> App polls task status and displays progress + result
+  → 通过局域网访问电脑 FastAPI
+  → server/main.py 创建任务
+  → 检查 API Key、Open-AutoGLM、无线 ADB 设备
+  → 可选 prepare_device：唤醒、解锁、回桌面
+  → subprocess 启动 Open-AutoGLM/main.py
+  → PhoneAgent.run(task)：截图 → VLM 决策 → ADB 执行 → 循环
+  → server 清洗日志为结构化 Trace
+  → App 轮询展示结果
 ```
 
-One-sentence summary:
+一句话：
 
-> WiFi v1 keeps the PC as the local Agent backend, controls the phone through wireless ADB, and lets the mobile App access the local service using the PC's LAN address.
+> WiFi v1 让电脑作为 Agent 后端，通过无线 ADB 控制手机，App 用电脑局域网 IP 访问本地服务。
 
-## 7. Runtime Requirements
+## 7. 运行条件
 
-| Requirement | Description |
+| 条件 | 说明 |
 | --- | --- |
-| Windows PC | Runs the local FastAPI backend |
-| PowerShell / CMD | Keep `start_server.bat` running |
-| Python environment | Used for backend and Open-AutoGLM |
-| Android phone | Enable Developer options and Wireless debugging |
-| Same WiFi network | PC and phone must be on the same LAN |
-| ADB / platform-tools | Used for `adb connect`, input, tap, and control |
-| BigModel API Key | Required for `autoglm-phone` inference |
-| ADB Keyboard | Recommended for stable text input |
+| Windows 电脑 | 必须运行 FastAPI 后端 |
+| PowerShell / CMD | 保持 `start_server.bat` 窗口开启 |
+| 同一 WiFi | 手机和电脑必须在同一局域网 |
+| 手机无线调试 | 开启开发者选项 + 无线调试 |
+| ADB / platform-tools | `adb connect`、`adb devices` 等 |
+| 智谱 API Key | 调用 `autoglm-phone` |
+| ADB Keyboard | 建议安装，提升中文输入稳定性 |
 
-WiFi v1 **does not require a cloud server, Docker, or Tailscale**.
+**不需要** 云服务器、Docker、Tailscale。
 
-## 8. Quick Start
+## 8. 快速开始
 
-### 8.1 Configure environment variables
-
-Copy:
+### 8.1 配置环境变量
 
 ```text
-server/.env.example -> server/.env
+server/.env.example → server/.env
 ```
 
-Fill in:
+填写：
 
 ```text
-BIGMODEL_API_KEY=your_bigmodel_api_key
-AUTOGLM_WORK_ROOT=C:/Users/YourName/Desktop/autoglm-mobile-copilot-wifi-v1
-ADB_PATH=C:/Android/platform-tools/adb.exe
+BIGMODEL_API_KEY=你的智谱APIKey
+AUTOGLM_WORK_ROOT=你的项目路径
+ADB_PATH=你的adb.exe路径
 ```
 
-### 8.2 Start the local backend
+### 8.2 启动本地后端
 
 ```cmd
 server\start_server.bat
 ```
 
-Keep that terminal window open.
+保持窗口不要关闭。
 
-### 8.3 Connect the phone over WiFi
+### 8.3 连接手机（WiFi ADB）
 
-Usually you need USB once to switch ADB into TCP mode:
+首次通常需要 USB 一次，开启 TCP 模式：
 
 ```cmd
 adb tcpip 5555
 ```
 
-Then disconnect USB and run:
+拔掉 USB 后，在同一 WiFi 下：
 
 ```cmd
 set PHONE_IP=192.168.x.x
 server\connect_phone_wifi.bat
 ```
 
-Or connect manually:
+或手动：
 
 ```cmd
 adb connect 192.168.1.100:5555
 adb devices
 ```
 
-### 8.4 Configure the mobile App
+### 8.4 App 配置
 
-Set the App base URL to:
-
-```text
-http://PC_LAN_IP:8000
-```
-
-Important: **do not use `127.0.0.1`** in WiFi mode.
-
-Then tap `Connect Test`, choose `Real`, and run tasks.
-
-## 9. Recommended Demo Tasks
+**重要：WiFi 模式不要用 `127.0.0.1`**
 
 ```text
-Open Settings and view WLAN
-Open Browser and search Open-AutoGLM
-Open Meituan and search Mixue Bingcheng
+http://电脑局域网IP:8000
 ```
 
-Start with `Open Settings and view WLAN` for the highest success rate. Then move on to Meituan. More complex apps like Xiaohongshu can be demonstrated later.
+例如 `http://192.168.1.10:8000`，然后连接测试 → 选 Real → 执行任务。
 
-## 10. Demo Video and Screenshots
+## 9. 与 USB 版的区别
 
-Suggested files:
+| 对比项 | USB v1 | WiFi v1（本仓库） |
+| --- | --- | --- |
+| 手机连接 | USB 数据线 | 无线 ADB |
+| App 地址 | `http://127.0.0.1:8000` | `http://电脑IP:8000` |
+| 是否需要 adb reverse | 需要 | 不需要 |
+| 是否需要一直插线 | 需要 | 不需要 |
+| 对应官方文档 | USB 部署 | 远程调试 / WiFi ADB |
+
+## 10. 推荐演示任务
 
 ```text
-demo/demo_wifi_v1.mp4
-assets/architecture-wifi.png
-assets/app-home-wifi.png
-assets/trace-view-wifi.png
-assets/wifi-result.png
+打开设置查看WLAN
+打开浏览器搜索 Open-AutoGLM
+打开美团搜索蜜雪冰城
 ```
 
-If the video is large, upload it to GitHub Release or cloud storage and place the link in this README instead of committing raw video into repository history.
+建议先从「打开设置查看 WLAN」开始，成功率高。
 
-## 11. Improvements in This Version
+## 11. Demo Video（演示视频）
 
-- Wrapped Open-AutoGLM CLI as a FastAPI service.
-- Mobile App can submit tasks and view status / trace.
-- Supports Mock / Real modes for easier debugging.
-- Removes the need for permanent USB connection.
-- Keeps the full App + FastAPI + Open-AutoGLM integration chain in a local environment.
+本项目包含真实设备任务执行的录屏演示，视频托管在 **GitHub Releases**。
 
-## 12. Future Upgrade Direction
+- **WiFi v1 Demo：** [观看 / 下载演示视频](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot/releases)
 
-WiFi v1 can be upgraded to a cloud version by:
+视频内容包含：
 
-- Moving the backend from the local PC to a cloud server.
-- Replacing same-LAN WiFi ADB with Tailscale + remote ADB.
-- Deploying with Docker.
-- Removing the need to keep the PC always online.
-- Adding more handling for remote screenshot delay, keyboard checks, and takeover behavior.
+- 本地后端启动
+- 无线 ADB 连接（`adb connect`）
+- 手机 App 提交任务（Real 模式）
+- 真实 Android 手机自动操作
+- Agent Trace 与最终结果
 
-The corresponding final project can be maintained separately as `autoglm-mobile-copilot-cloud`.
+**全系列 Demo：** [USB 主仓库 SERIES.md](https://github.com/ginny-pjj/USB-Autoglm-Mobile-Copilot/blob/main/SERIES.md#demo-演示视频)
 
-## 13. Acknowledgement
+<!-- 上传 Release 后改为具体链接，例如：
+- [WiFi v1 Demo](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot/releases/download/v1.0-demo/demo_wifi_v1.mp4)
+-->
 
-This project is based on [zai-org/Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) and adapts it into a local wireless debugging workflow. Please follow the upstream license and attribution requirements.
+## 12. phone_agent 目录对照
 
-Do not commit real API keys or videos containing private information.
+→ **[docs/phone_agent-目录对照.md](docs/phone_agent-目录对照.md)**（对齐 [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 官方结构）
+
+## 13. 对照 Open-AutoGLM 作业要求
+
+| 官方要求 | 本仓库 |
+| --- | --- |
+| 远程调试：`adb connect IP:5555` | ✅ `connect_phone_wifi.bat` |
+| phone_agent 内核 | ✅ [docs/phone_agent-目录对照.md](docs/phone_agent-目录对照.md) |
+| 智谱 API + 自然语言控制 | ✅ |
+| **扩展：App + FastAPI + Trace** | ✅ |
+
+完整对照 → **[docs/作业对照与面试官导读.md](docs/作业对照与面试官导读.md)**
+
+## 14. 致谢
+
+基于 [zai-org/Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 工程封装。请遵守上游 License。
+
+请勿提交真实 API Key 或含隐私的录屏。

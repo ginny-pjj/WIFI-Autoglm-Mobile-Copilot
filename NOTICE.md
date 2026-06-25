@@ -1,16 +1,14 @@
-﻿# Notice
+﻿# 第三方声明（NOTICE）
 
-This project is built on top of [zai-org/Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM).
+本项目基于 [zai-org/Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) 构建。
 
-Open-AutoGLM provides the core Phone Agent implementation, including multimodal screen understanding, action planning, and ADB-based device control. This repository adds an application-oriented layer around it for **local WiFi debugging**:
+Open-AutoGLM 提供 Phone Agent 核心能力。本仓库在其上增加了：
 
-- FastAPI task server
-- Android mobile control app
-- Mock / Real execution modes
-- Structured Trace output
-- Same-WiFi wireless ADB setup guide
-- Demo-oriented documentation
+- FastAPI 任务服务（`server/`）
+- Android 控制端 App（`mobile-app/`）
+- Mock / Real 双模式与结构化 Trace
+- WiFi 无线 ADB 本地部署与连接脚本
 
-Please refer to the upstream Open-AutoGLM repository for original license and attribution requirements.
+请遵守上游 Open-AutoGLM 的 License 与引用要求。
 
-Do not publish real API keys, private screenshots, raw personal videos, local LAN addresses, or any sensitive personal information.
+**请勿公开：** 真实 API Key、含隐私的截图或录屏。

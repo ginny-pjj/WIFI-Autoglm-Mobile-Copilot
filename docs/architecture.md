@@ -1,68 +1,63 @@
-# WiFi v1 Architecture and Execution Logic
+# WiFi v1 系统架构与实现逻辑
 
-## 1. Overall Call Chain
+## 1. 总体调用链
+
 ```text
-Mobile App
-  -> http://PC_LAN_IP:8000
-  -> Windows local FastAPI Server
-  -> Open-AutoGLM main.py
-  -> PhoneAgent.run(task)
-  -> Screenshot / Model Decision / WiFi ADB Action
-  -> Real Android Phone
+手机 App
+  → http://电脑局域网IP:8000
+  → Windows 本地 FastAPI Server
+  → Open-AutoGLM main.py
+  → PhoneAgent.run(task)
+  → 截图 / 模型决策 / WiFi ADB 执行
+  → 真实 Android 手机
 ```
 
-The core of WiFi v1 is: the PC runs the backend, the phone and PC stay on the same WiFi, the phone is connected by `adb connect phone_ip:5555`, and the mobile App accesses the local backend through the PC's LAN address.
+WiFi v1 的核心：电脑跑后端，手机与电脑同 WiFi，通过 `adb connect 手机IP:5555` 无线连接，App 用电脑局域网 IP 访问后端。
 
-## 2. Layer Description
+## 2. 分层说明
 
-| Layer | Location | Purpose |
+| 层 | 位置 | 作用 |
 | --- | --- | --- |
-| Mobile side | `mobile-app/App.tsx` | Input task, configure `http://PC_LAN_IP:8000`, display status and Trace |
-| Local API | `server/main.py` | Provides task APIs, manages task state, invokes Open-AutoGLM |
-| Startup script | `server/start_server.bat` | Starts the local FastAPI service |
-| WiFi helper script | `server/connect_phone_wifi.bat` | Checks wireless ADB and prints App base URL |
-| Agent entry | `Open-AutoGLM/main.py` | Checks device, keyboard, model API, then starts PhoneAgent |
-| Agent loop | `Open-AutoGLM/phone_agent/agent.py` | Observe -> Think -> Act multi-step loop |
-| Action execution | `Open-AutoGLM/phone_agent/actions/handler.py` | Executes Launch, Tap, Type, Swipe, Back, Home |
-| Device control | `Open-AutoGLM/phone_agent/adb/` | Screenshot, input, tapping, swiping, WiFi ADB connection |
+| 移动端 | `mobile-app/App.tsx` | 输入任务、配置 `http://电脑IP:8000`、展示 Trace |
+| 本地 API | `server/main.py` | 任务接口、状态管理、调用 Open-AutoGLM |
+| 启动脚本 | `server/start_server.bat` | 启动 FastAPI |
+| WiFi 脚本 | `server/connect_phone_wifi.bat` | 无线 ADB 连接与检查 |
+| Agent 入口 | `Open-AutoGLM/main.py` | 检查设备、键盘、API，启动 PhoneAgent |
+| Agent 主循环 | `Open-AutoGLM/phone_agent/agent.py` | Observe → Think → Act |
+| 动作执行 | `Open-AutoGLM/phone_agent/actions/handler.py` | Launch、Tap、Type、Swipe 等 |
+| 设备控制 | `Open-AutoGLM/phone_agent/adb/` | 截图、输入、点击、无线 ADB |
 
-## 3. Real Mode Flow
+## 3. Real 模式执行流程
 
 ```text
 POST /tasks { task, mode: real }
-  -> App sends request to local backend over LAN
-  -> Check API key, Python, Open-AutoGLM, wireless ADB device
-  -> Optionally wake / unlock / return phone to desktop
-  -> Start Open-AutoGLM subprocess
-  -> Agent captures current phone screen
-  -> VLM understands screen and outputs action
-  -> handler executes action through WiFi ADB
-  -> Capture next screen to verify result
-  -> Finish or timeout and return final task state
+  → App 经局域网访问电脑后端
+  → 检查 API Key、Open-AutoGLM、无线 ADB 设备
+  → 可选唤醒、解锁、回桌面
+  → 启动 Open-AutoGLM 子进程
+  → 截图 → VLM 决策 → WiFi ADB 执行 → 循环
+  → finish 或超时后返回
 ```
 
-## 4. WiFi v1 Runtime Requirements
+## 4. 运行条件
 
-| Requirement | Description |
+| 条件 | 说明 |
 | --- | --- |
-| Windows PC | Runs the local backend |
-| PowerShell / CMD | Keep `start_server.bat` open |
-| Same WiFi | PC and phone must be on the same LAN |
-| Phone wireless debugging | Allow ADB control over network |
-| ADB / platform-tools | Used for `adb connect`, tapping, typing, and screenshot |
-| BigModel API Key | Required for model inference |
+| Windows 电脑 | 运行后端 |
+| 同一 WiFi | PC 与手机同局域网 |
+| 无线调试 | 手机开启无线 ADB |
+| 智谱 API Key | 模型推理必需 |
 
-## 5. Difference from the Cloud Version
+## 5. 与 USB / 云端版对比
 
-| Item | WiFi v1 |
+| 项目 | WiFi v1 |
 | --- | --- |
-| Backend location | Local PC |
-| Phone connection | WiFi ADB |
-| App base URL | `http://PC_LAN_IP:8000` |
-| Cloud server required | No |
-| Tailscale required | No |
-| PC must stay on | Yes |
+| 后端位置 | 本地电脑 |
+| 手机连接 | WiFi ADB |
+| App 地址 | `http://电脑IP:8000` |
+| 需要云服务器 | 否 |
+| 电脑要一直开 | 是 |
 
-## 6. One-line Demo Explanation
+## 6. 答辩一句话
 
-> WiFi v1 is the local wireless debugging stage of the project: the PC runs the Agent backend, the phone is controlled through wireless ADB on the same WiFi, and the mobile App visualizes the full execution process.
+> WiFi v1 是项目的无线调试阶段：在同一 WiFi 下用官方 remote ADB 能力控制真实手机，并用 App 可视化 Agent 执行过程。

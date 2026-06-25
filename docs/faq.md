@@ -1,41 +1,39 @@
 ﻿# WiFi v1 FAQ
 
-## 1. What is the difference between this project and the cloud version?
+## 1. 和云端版有什么区别？
 
-WiFi v1 runs entirely on a local Windows PC and controls the phone through wireless ADB on the same WiFi network. The cloud version runs the backend on a remote server and typically uses Tailscale plus remote ADB to reach the phone.
+WiFi v1 在本地 Windows 跑后端，手机通过同 WiFi 无线 ADB 连接。云端版后端在远程服务器，通常用 Tailscale + 远程 ADB。
 
-## 2. Does the PC need to stay on?
+## 2. 电脑必须一直开着吗？
 
-Yes. This version depends on the local FastAPI backend running on your PC, so the terminal running `server/start_server.bat` must stay open during execution.
+必须。`start_server.bat` 窗口不能关。
 
-## 3. Do I need a cloud server?
+## 3. 需要云服务器吗？
 
-No. WiFi v1 is a local deployment version and does not require a cloud server.
+不需要。这是纯本地部署。
 
-## 4. Why should the App not use `http://127.0.0.1:8000`?
+## 4. App 为什么不能用 `http://127.0.0.1:8000`？
 
-Because WiFi v1 does not use `adb reverse`. The phone must access the PC through the PC's LAN IP, for example `http://192.168.x.x:8000`.
+WiFi 版没有 `adb reverse`。127.0.0.1 是手机自己，必须填电脑的局域网 IP，如 `http://192.168.1.10:8000`。
 
-## 5. What if REAL mode shows no device?
+## 5. REAL 模式显示无设备怎么办？
 
-Check the following:
+检查：
 
-1. The phone and the PC are on the same WiFi.
-2. Wireless debugging is enabled on the phone.
-3. `adb connect phone_ip:5555` succeeds.
-4. `adb devices` shows `phone_ip:5555    device`.
-5. The backend is running before you tap `Connect Test`.
+1. 手机和电脑是否同一 WiFi
+2. 是否开启无线调试
+3. `adb connect 手机IP:5555` 是否成功
+4. `adb devices` 是否显示 `device`
+5. 后端是否已启动
 
-## 6. Can I commit the API key to GitHub?
+## 6. API Key 能提交 GitHub 吗？
 
-No. Only commit `.env.example`. The real `server/.env` file must stay ignored by Git.
+不能。只提交 `.env.example`，真实 `server/.env` 必须在 `.gitignore` 里。
 
-## 7. Is ADB Keyboard required?
+## 7. ADB Keyboard 必须装吗？
 
-It is not strictly required for every simple task, but it is strongly recommended for stable text input, especially for Chinese text and search tasks.
+建议安装并启用，中文输入更稳定。
 
-## 8. What is the main validation target of this version?
+## 8. 本版本的验收标准是什么？
 
-The baseline goal of WiFi v1 is to prove that the full local pipeline works:
-
-App -> FastAPI -> Open-AutoGLM -> WiFi ADB -> real Android phone
+跑通：App → FastAPI → Open-AutoGLM → WiFi ADB → 真实手机的完整闭环。

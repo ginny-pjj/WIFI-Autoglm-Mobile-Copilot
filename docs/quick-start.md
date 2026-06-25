@@ -1,6 +1,6 @@
-# WiFi v1 Quick Start
+# WiFi v1 快速开始
 
-## 1. Install Dependencies
+## 1. 安装依赖
 
 ```bash
 cd Open-AutoGLM
@@ -11,49 +11,53 @@ cd ..\server
 pip install -r requirements.txt
 ```
 
-## 2. Configure Environment Variables
+## 2. 配置环境变量
 
-Copy:
-
-```text
-server/.env.example -> server/.env
-```
-
-Fill in:
+复制：
 
 ```text
-BIGMODEL_API_KEY=your_bigmodel_api_key
-AUTOGLM_WORK_ROOT=your_project_path
-ADB_PATH=your_adb_exe_path
+server/.env.example → server/.env
 ```
 
-## 3. Start the Backend
+填写：
+
+```text
+BIGMODEL_API_KEY=你的智谱APIKey
+AUTOGLM_WORK_ROOT=你的项目路径
+ADB_PATH=你的adb.exe路径
+```
+
+## 3. 启动后端
 
 ```cmd
 server\start_server.bat
 ```
 
-## 4. Connect the Phone over WiFi
+保持窗口开启。
 
-Usually you need USB once to enable ADB over TCP:
+## 4. WiFi 连接手机
+
+首次通常需 USB 开启 TCP：
 
 ```cmd
 adb tcpip 5555
 ```
 
-Then, under the same WiFi:
+同一 WiFi 下：
 
 ```cmd
 set PHONE_IP=192.168.x.x
 server\connect_phone_wifi.bat
 ```
 
-## 5. Configure the Mobile App
+确认 `adb devices` 显示 `phone_ip:5555    device`。
 
-Set the App base URL to:
+## 5. 配置 App
+
+地址填：
 
 ```text
-http://PC_LAN_IP:8000
+http://电脑局域网IP:8000
 ```
 
-Tap `Connect Test`, then run tasks.
+**不要用 `127.0.0.1`**。连接测试通过后即可执行任务。
