@@ -18,30 +18,15 @@
 
 ## 系统架构
 
-```mermaid
-flowchart TB
-    subgraph Phone["Android 手机"]
-        App["Mobile App"]
-    end
+![系统架构图](assets/architecture-wifi.png)
 
-    subgraph PC["Windows 电脑（局域网）"]
-        API["FastAPI Server"]
-        Agent["Open-AutoGLM PhoneAgent"]
-    end
+**数据流简述：**
 
-    subgraph Device["Android 手机（ADB）"]
-        Screen["截图 / 执行操作"]
-    end
+1. App 通过局域网 HTTP 访问电脑 FastAPI（`/tasks`）
+2. PhoneAgent 经 WiFi ADB（`adb connect`）连接手机
+3. 截图 → 智谱模型决策 → ADB 执行 → 状态回传 App
 
-    VLM["智谱 autoglm-phone"]
-
-    App -->|"HTTP 电脑IP:8000"| API
-    API --> Agent
-    Agent <-->|"adb connect IP:5555"| Screen
-    Agent <--> VLM
-```
-
-与 USB 版的区别：不使用 `adb reverse`，App 必须填写电脑的局域网 IP，不能填 `127.0.0.1`。
+与 USB 版的区别：不使用 `adb reverse`，App 须填写电脑局域网 IP，不能填 `127.0.0.1`。
 
 ---
 
@@ -106,7 +91,11 @@ http://电脑局域网IP:8000
 
 ## 演示视频
 
-[GitHub Releases](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot/releases)
+**[观看 WiFi 版演示视频](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot/releases/download/demo-wifi/WIFI-demo.mp4)**
+
+视频包含：后端启动 → 无线 ADB 连接 → App 提交任务 → 手机自动操作 → Trace 与结果。
+
+[Releases](https://github.com/ginny-pjj/WIFI-Autoglm-Mobile-Copilot/releases) · [系列说明](https://github.com/ginny-pjj/USB-Autoglm-Mobile-Copilot/blob/main/SERIES.md)
 
 ---
 

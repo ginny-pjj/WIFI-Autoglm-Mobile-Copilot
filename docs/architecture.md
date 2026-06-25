@@ -1,4 +1,6 @@
-# WiFi v1 系统架构与实现逻辑
+# WiFi 版系统架构
+
+![系统架构图](../assets/architecture-wifi.png)
 
 ## 1. 总体调用链
 
