@@ -74,10 +74,4 @@ mobile-app/App.tsx          # Android App（你做的）
 mobile-app/ → server/main.py → Open-AutoGLM/main.py → phone_agent/ → ADB → 手机
 ```
 
----
-
-## 5. 答辩一句话
-
-> 保留官方 phone_agent 内核，在其上加了 server 和 mobile-app，把 CLI Agent 产品化；WiFi 版对应官方 remote ADB 能力。
-
 系列总览 → [USB 主仓库 SERIES.md](https://github.com/ginny-pjj/USB-Autoglm-Mobile-Copilot/blob/main/SERIES.md)

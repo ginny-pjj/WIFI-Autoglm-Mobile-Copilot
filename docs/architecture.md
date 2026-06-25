@@ -49,17 +49,3 @@ POST /tasks { task, mode: real }
 | 同一 WiFi | PC 与手机同局域网 |
 | 无线调试 | 手机开启无线 ADB |
 | 智谱 API Key | 模型推理必需 |
-
-## 5. 与 USB / 云端版对比
-
-| 项目 | WiFi v1 |
-| --- | --- |
-| 后端位置 | 本地电脑 |
-| 手机连接 | WiFi ADB |
-| App 地址 | `http://电脑IP:8000` |
-| 需要云服务器 | 否 |
-| 电脑要一直开 | 是 |
-
-## 6. 答辩一句话
-
-> WiFi v1 是项目的无线调试阶段：在同一 WiFi 下用官方 remote ADB 能力控制真实手机，并用 App 可视化 Agent 执行过程。
