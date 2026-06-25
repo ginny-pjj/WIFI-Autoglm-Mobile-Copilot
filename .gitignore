@@ -1,0 +1,55 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+!*.env.example
+server/.env
+
+# Node / Expo
+mobile-app/node_modules/
+mobile-app/.expo/
+mobile-app/dist-bundle/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Android build outputs
+mobile-app/android/.gradle/
+mobile-app/android/build/
+mobile-app/android/app/build/
+mobile-app/android/app/.cxx/
+*.keystore
+
+# Runtime / debug outputs
+tmp/
+screenshot_debug/
+screen.png
+server/task_result.json
+*.trace.json
+
+# Large binaries / local tools
+platform-tools/
+*.zip
+*.apk
+!ADBKeyboard.apk
+!releases/.gitkeep
+!demo/.gitkeep
+!assets/.gitkeep
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+server/__pycache__/
+Open-AutoGLM/**/__pycache__/
+mobile-app/android/.kotlin/
+demo/*.mp4
